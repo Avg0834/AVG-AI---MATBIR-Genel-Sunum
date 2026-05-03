@@ -410,7 +410,7 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
                 <div class="chat-bubble bubble-ai">Merhaba! Ben Matbir 360° teknoloji danışmanıyım. Size nasıl yardımcı olabilirim?</div>
             </div>
             <div class="ai-input-area">
-                <input type="text" id="aiInput" class="ai-input" placeholder="Bir soru yazın...">
+                <input type="text" id="aiInput" class="ai-input" placeholder="Bir soru yazın..." onkeypress="if(event.key === 'Enter') runAI()">
                 <button class="ai-ask-btn" onclick="runAI()" style="margin-top: 0; padding: 8px 16px;">Sor</button>
             </div>
             <div style="display: flex; justify-content: flex-end; margin-top: 10px; gap: 8px;">
@@ -482,10 +482,9 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // v1beta kullanıyoruz
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            // KESİN ÇÖZÜM: MODEL GEMINI-PRO OLARAK DEĞİŞTİRİLDİ
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
             
-            // HİLE BURADA: Sistem komutunu API'nin reddedemeyeceği normal bir mesajmış gibi en başa gizlice ekliyoruz
             let finalHistory = [];
             finalHistory.push({
                 role: 'user',
@@ -496,7 +495,7 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
                 parts: [{ text: "Anlaşıldı, tüm yanıtlarımı bu profesyonel danışman vizyonuyla ve AVG AI imzasını ekleyerek vereceğim." }]
             });
 
-            // Kullanıcının asıl sohbet geçmişini (senin yazdıklarını) bunun peşine ekliyoruz
+            // Kullanıcının asıl sohbet geçmişini ekliyoruz
             finalHistory = finalHistory.concat(history.map(h => ({ role: h.role, parts: h.parts })));
             
             let delays = [1000, 2000, 4000, 8000];
@@ -553,7 +552,6 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
             if (e.key === 'ArrowDown') goToSlide(Math.min(slides.length - 1, currentSlide + 1));
             if (e.key === 'ArrowUp') goToSlide(Math.max(0, currentSlide - 1));
             if (e.key === 'Escape') closeAI();
-            if (e.key === 'Enter' && document.getElementById('aiModal').style.display === 'flex') runAI();
         });
     </script>
 </body>
