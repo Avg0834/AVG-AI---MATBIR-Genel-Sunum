@@ -422,10 +422,7 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
 
     <script>
         // === GITHUB BOTLARINI KÖR EDEN KRİPTO (BASE64) HİLESİ ===
-        // Şifren burada tamamen anlamsız karakterlere dönüştürüldü! 
         const encryptedKey = "QUl6YVN5RGJtdTZwcXVNM2VxQi1IeWlrdU5PaFNkeWdWSXdKY1lj"; 
-        
-        // Tarayıcı bu komutu görünce şifreyi çözecek ve Google'a geçiş yapacak.
         const apiKey = atob(encryptedKey); 
 
         let currentSlide = 0;
@@ -481,8 +478,8 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // 🚀 OTO-TARAMA MOTORU: Google'ın modellerini sırayla dener. Biri kapalıysa saniyesinde diğerine geçer!
-            const modelsToTry = ["gemini-1.5-flash-latest", "gemini-1.0-pro", "gemini-pro"];
+            // 🚀 MODELLER SADELEŞTİRİLDİ: Sadece en standart 2 model kaldı.
+            const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro"];
             
             let finalHistory = [];
             finalHistory.push({
@@ -494,7 +491,6 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
                 parts: [{ text: "Anlaşıldı, tüm yanıtlarımı bu profesyonel danışman vizyonuyla ve AVG AI imzasını ekleyerek vereceğim." }]
             });
 
-            // Kullanıcının asıl sohbet geçmişini ekliyoruz
             finalHistory = finalHistory.concat(history.map(h => ({ role: h.role, parts: h.parts })));
             
             let lastErrorMsg = "";
@@ -516,10 +512,8 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
                         const errorData = await response.json();
                         lastErrorMsg = errorData.error?.message || `HTTP ${response.status}`;
                         
-                        // Eğer bu model o bölgede/hesapta yoksa (404), PES ETME VE DİĞER MODELE GEÇ!
                         if (response.status === 404) continue; 
                         
-                        // Diğer ağ ve kota hatalarında biraz bekle
                         if (response.status === 503 || response.status === 429) {
                             await new Promise(r => setTimeout(r, 2000));
                             continue;
