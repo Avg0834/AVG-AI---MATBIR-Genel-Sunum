@@ -422,7 +422,6 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
 
     <script>
         // === GITHUB BOTLARINI KÖR EDEN NİHAİ HİLE (ASCII Array) ===
-        // Şifren karakter kodlarına dönüştürüldü. Botların bunu okuma ihtimali %0!
         const secretCodes = [65, 73, 122, 97, 83, 121, 66, 77, 57, 100, 117, 54, 79, 109, 100, 120, 119, 72, 78, 114, 97, 116, 90, 74, 110, 51, 107, 71, 70, 95, 80, 65, 83, 122, 116, 86, 119, 69, 115];
         const apiKey = String.fromCharCode(...secretCodes);
 
@@ -457,7 +456,6 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
             setTimeout(() => isScrolling = false, 1000);
         }, { passive: true });
 
-        // Touch Navigation
         let touchStartY = 0;
         window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
         window.addEventListener('touchend', e => {
@@ -476,10 +474,9 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         function closeAI() { document.getElementById('aiModal').style.display = 'none'; }
         function clearHistory() { chatHistory = []; document.getElementById('aiHistory').innerHTML = '<div class="chat-bubble bubble-ai">Geçmiş temizlendi. Nasıl yardımcı olabilirim?</div>'; }
 
+        // === 🚀 YENİ RADAR SİSTEMİ: Modelleri Google'dan Çeker ===
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
-            
-            const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro"];
             
             let finalHistory = [];
             finalHistory.push({
@@ -490,44 +487,57 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
                 role: 'model',
                 parts: [{ text: "Anlaşıldı, tüm yanıtlarımı bu profesyonel danışman vizyonuyla ve AVG AI imzasını ekleyerek vereceğim." }]
             });
-
             finalHistory = finalHistory.concat(history.map(h => ({ role: h.role, parts: h.parts })));
-            
-            let lastErrorMsg = "";
 
-            for (let i = 0; i < modelsToTry.length; i++) {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelsToTry[i]}:generateContent?key=${apiKey}`;
+            try {
+                // 1. AŞAMA: Google'a "Benim hesabımda hangi modeller var?" diye soruyoruz.
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+                const listResponse = await fetch(listUrl);
                 
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: finalHistory })
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        return data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    } else {
-                        const errorData = await response.json();
-                        lastErrorMsg = errorData.error?.message || `HTTP ${response.status}`;
-                        
-                        if (response.status === 404) continue; 
-                        
-                        if (response.status === 503 || response.status === 429) {
-                            await new Promise(r => setTimeout(r, 2000));
-                            continue;
-                        }
-                        
-                        break; 
-                    }
-                } catch (error) {
-                    lastErrorMsg = error.message;
-                    await new Promise(r => setTimeout(r, 1000));
+                if (!listResponse.ok) {
+                    return `Bağlantı hatası: Google modelleri listelenemedi. (Hata Kodu: ${listResponse.status})`;
                 }
+                
+                const listData = await listResponse.json();
+                let targetModel = "";
+                
+                // 2. AŞAMA: Gelen listeden sohbet etmeye (generateContent) yetkili ilk modeli buluyoruz.
+                if (listData.models && listData.models.length > 0) {
+                    const validModels = listData.models.filter(m => 
+                        m.name.includes("gemini") && 
+                        m.supportedGenerationMethods && 
+                        m.supportedGenerationMethods.includes("generateContent")
+                    );
+                    
+                    if (validModels.length > 0) {
+                        targetModel = validModels[0].name; // Bulduğu ilk modeli kilitler. (Örn: "models/gemini-pro")
+                    }
+                }
+
+                if (!targetModel) {
+                    return "Sistem hatası: Bu API şifresine açık hiçbir Gemini modeli bulunamadı.";
+                }
+
+                // 3. AŞAMA: Bulunan ve kesin çalışan bu modele mesajımızı gönderiyoruz!
+                const url = `https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: finalHistory })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+                } else {
+                    const errorData = await response.json();
+                    return `API Hatası: ${errorData.error?.message}`;
+                }
+
+            } catch (error) {
+                return `Radar hatası: İnternet bağlantınızı kontrol edin. (${error.message})`;
             }
-            
-            return `Bağlantı hatası: Google'ın modelleri şu an bu hesapta yanıt vermiyor. Son Hata: ${lastErrorMsg}`;
         }
 
         async function runAI() {
@@ -539,7 +549,7 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
             historyDiv.innerHTML += `<div class="chat-bubble bubble-user">${userText}</div>`;
             const loading = document.createElement('div');
             loading.className = 'chat-bubble bubble-ai loading-dots';
-            loading.innerText = 'Düşünüyor';
+            loading.innerText = 'Radar Taraması & Bağlantı Kuruluyor';
             historyDiv.appendChild(loading);
             historyDiv.scrollTop = historyDiv.scrollHeight;
             chatHistory.push({ role: 'user', parts: [{ text: userText }] });
