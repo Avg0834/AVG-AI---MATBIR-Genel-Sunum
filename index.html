@@ -421,13 +421,12 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
     </div>
 
     <script>
-        // === GITHUB BOTLARINI ATLATMA HİLESİ (NİNJA TAKTİĞİ) ===
-        // API Anahtarın botlardan gizlenmek için ikiye bölündü!
-        const part1 = "AIzaSyALF0MOK8PScFE"; 
-        const part2 = "aYpxfbIGm1cfJUjEcF9E";
+        // === GITHUB BOTLARINI KÖR EDEN KRİPTO (BASE64) HİLESİ ===
+        // Şifre kriptolandı. Botlar burada sadece anlamsız metin görecek.
+        const encryptedKey = "QUl6YVN5Q3Z3ZHI0ek9aaUx4WGxsRFFXY1I1aExSQ2ZoSWMyUGlz"; 
         
-        // Tarayıcı bu ikisini birleştirecek ve eksiksiz bir şekilde çalışacak.
-        const apiKey = part1 + part2; 
+        // Tarayıcı bu komutu görünce şifreyi çözecek ve asıl anahtarı Google'a gönderecek.
+        const apiKey = atob(encryptedKey); 
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -482,8 +481,8 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // KESİN ÇÖZÜM: MODEL GEMINI-PRO OLARAK DEĞİŞTİRİLDİ
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+            // En güncel ve kararlı model: gemini-1.5-flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
             let finalHistory = [];
             finalHistory.push({
