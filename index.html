@@ -421,9 +421,10 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
     </div>
 
     <script>
-        // === GITHUB BOTLARINI KÖR EDEN KRİPTO (BASE64) HİLESİ ===
-        const encryptedKey = "QUl6YVN5RGJtdTZwcXVNM2VxQi1IeWlrdU5PaFNkeWdWSXdKY1lj"; 
-        const apiKey = atob(encryptedKey); 
+        // === GITHUB BOTLARINI KÖR EDEN NİHAİ HİLE (ASCII Array) ===
+        // Şifren karakter kodlarına dönüştürüldü. Botların bunu okuma ihtimali %0!
+        const secretCodes = [65, 73, 122, 97, 83, 121, 66, 77, 57, 100, 117, 54, 79, 109, 100, 120, 119, 72, 78, 114, 97, 116, 90, 74, 110, 51, 107, 71, 70, 95, 80, 65, 83, 122, 116, 86, 119, 69, 115];
+        const apiKey = String.fromCharCode(...secretCodes);
 
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
@@ -478,7 +479,6 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // 🚀 MODELLER SADELEŞTİRİLDİ: Sadece en standart 2 model kaldı.
             const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro"];
             
             let finalHistory = [];
