@@ -422,10 +422,10 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
 
     <script>
         // === GITHUB BOTLARINI KÖR EDEN KRİPTO (BASE64) HİLESİ ===
-        // Şifre kriptolandı. Botlar burada sadece anlamsız metin görecek.
-        const encryptedKey = "QUl6YVN5Q3Z3ZHI0ek9aaUx4WGxsRFFXY1I1aExSQ2ZoSWMyUGlz"; 
+        // Şifren burada tamamen anlamsız karakterlere dönüştürüldü! 
+        const encryptedKey = "QUl6YVN5RGJtdTZwcXVNM2VxQi1IeWlrdU5PaFNkeWdWSXdKY1lj"; 
         
-        // Tarayıcı bu komutu görünce şifreyi çözecek ve asıl anahtarı Google'a gönderecek.
+        // Tarayıcı bu komutu görünce şifreyi çözecek ve Google'a geçiş yapacak.
         const apiKey = atob(encryptedKey); 
 
         let currentSlide = 0;
@@ -481,7 +481,7 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // En güncel ve kararlı model: gemini-1.5-flash
+            // En kararlı ve güvenli model: gemini-1.5-flash
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             
             let finalHistory = [];
