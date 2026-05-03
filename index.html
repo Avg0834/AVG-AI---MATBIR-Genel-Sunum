@@ -481,8 +481,8 @@ h1, h2, h3 { font-family: 'Outfit', sans-serif; text-transform: uppercase; margi
         async function callGeminiAPI(history, systemPrompt) {
             if (!apiKey || !apiKey.startsWith("AIza")) return "Hata: Geçersiz API Anahtarı.";
             
-            // En güncel ve kararlı model: gemini-1.5-flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            // SORUNSUZ VE EVRENSEL MODEL: gemini-pro (Eskisi: gemini-1.5-flash)
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
             
             let finalHistory = [];
             finalHistory.push({
